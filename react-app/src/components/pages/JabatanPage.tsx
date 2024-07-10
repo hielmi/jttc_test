@@ -215,7 +215,7 @@ const JabatanPage = () => {
                     className="form-control"
                     id="name"
                     name="name"
-                    placeholder="Masukkan durasi kontrak"
+                    placeholder="Masukkan Jabatan"
                     required
                   />
                 </div>
@@ -258,7 +258,7 @@ const JabatanPage = () => {
               <form onSubmit={handleEdit}>
                 <div className="mb-3">
                   <label htmlFor="name" className="form-label">
-                    Nama Kontrak
+                    Nama Jabatan
                   </label>
                   <input
                     type="text"

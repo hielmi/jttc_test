@@ -24,18 +24,8 @@ const MainPage = () => {
   const [pegawaiList, setPegawaiList] = useState<Pegawai[]>([]);
   const [kontrakList, setKontrakList] = useState<Kontrak[]>([]);
   const [jabatanList, setJabatanList] = useState<Jabatan[]>([]);
-  const [formData, setFormData] = useState({
-    name: "",
-    id_jabatan: "",
-    id_kontrak: "",
-  });
 
-  const [selectedPegawai, setSelectedPegawai] = useState<Partial<Pegawai>>({
-    id: undefined,
-    name: "",
-    id_jabatan: undefined,
-    id_kontrak: undefined,
-  });
+  const [selectedPegawai, setSelectedPegawai] = useState<Partial<Pegawai>>({});
 
   useEffect(() => {
     fetchData();
@@ -68,34 +58,25 @@ const MainPage = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(formData);
     try {
+      const { name, id_jabatan, id_kontrak }: any = e.target as HTMLFormElement;
+
+      const data = {
+        name: name.value,
+        id_jabatan: id_jabatan.value,
+        id_kontrak: id_kontrak.value,
+      };
+
       const response = await axiosInstance.post(
         "/pegawai/addPegawai.php",
-        formData
+        data
       );
       console.log("Form submitted successfully:", response.data);
 
-      // Reset form after successful submission (optional)
-      setFormData({ name: "", id_jabatan: "", id_kontrak: "" });
-
-      // Refetch data to update the list (optional)
       fetchData();
     } catch (error) {
       console.error("Error submitting form:", error);
     }
-  };
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleChangeSelected = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    setSelectedPegawai({ ...selectedPegawai, [e.target.name]: e.target.value });
   };
 
   const handleDelete = async (id: number) => {
@@ -125,7 +106,6 @@ const MainPage = () => {
           );
 
           if (response.status) {
-            setSelectedPegawai({});
             fetchData();
             Swal.fire({
               title: "Deleted!",
@@ -139,6 +119,7 @@ const MainPage = () => {
             });
           }
         }
+        setSelectedPegawai({});
       });
     } catch (error) {
       console.error("Error deleting pegawai:", error);
@@ -148,6 +129,15 @@ const MainPage = () => {
   const handleEdit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
+      const { name, id_jabatan, id_kontrak }: any = e.target as HTMLFormElement;
+
+      const data = {
+        id: selectedPegawai.id,
+        name: name.value,
+        id_jabatan: id_jabatan.value,
+        id_kontrak: id_kontrak.value,
+      };
+
       if (!selectedPegawai.id) {
         return Swal.fire({
           title: "Please selected pegawai!",
@@ -157,10 +147,9 @@ const MainPage = () => {
       }
       const response = await axiosInstance.put(
         `/pegawai/updatePegawai.php`,
-        selectedPegawai
+        data
       );
       if (response.status) {
-        setSelectedPegawai({});
         fetchData();
         Swal.fire({
           title: "Updated!",
@@ -168,6 +157,7 @@ const MainPage = () => {
           icon: "success",
         });
       }
+      setSelectedPegawai({});
     } catch (error) {
       console.error("Error updating pegawai:", error);
       Swal.fire({
@@ -278,8 +268,6 @@ const MainPage = () => {
                     className="form-control"
                     id="name"
                     name="name"
-                    value={formData.name}
-                    onChange={handleChange}
                     placeholder="Masukkan nama pegawai"
                     required
                   />
@@ -292,8 +280,6 @@ const MainPage = () => {
                     className="form-select"
                     id="id_jabatan"
                     name="id_jabatan"
-                    value={formData.id_jabatan}
-                    onChange={handleChange}
                     required
                   >
                     <option value="">Pilih Jabatan</option>
@@ -312,8 +298,6 @@ const MainPage = () => {
                     className="form-select"
                     id="id_kontrak"
                     name="id_kontrak"
-                    value={formData.id_kontrak}
-                    onChange={handleChange}
                     required
                   >
                     <option value="">Pilih Kontrak</option>
@@ -370,9 +354,7 @@ const MainPage = () => {
                     className="form-control"
                     id="name"
                     name="name"
-                    value={selectedPegawai.name}
-                    onChange={handleChangeSelected}
-                    placeholder="Masukkan nama pegawai"
+                    defaultValue={selectedPegawai.name}
                     required
                   />
                 </div>
@@ -384,8 +366,14 @@ const MainPage = () => {
                     className="form-select"
                     id="id_jabatan"
                     name="id_jabatan"
-                    value={selectedPegawai.id_jabatan}
-                    onChange={handleChangeSelected}
+                    defaultValue={selectedPegawai.id_jabatan}
+                    value={selectedPegawai.id_jabatan || ""}
+                    onChange={(e) =>
+                      setSelectedPegawai({
+                        ...selectedPegawai,
+                        id_jabatan: parseInt(e.target.value),
+                      })
+                    }
                     required
                   >
                     <option value="">Pilih Jabatan</option>
@@ -404,8 +392,14 @@ const MainPage = () => {
                     className="form-select"
                     id="id_kontrak"
                     name="id_kontrak"
-                    value={selectedPegawai.id_kontrak}
-                    onChange={handleChangeSelected}
+                    defaultValue={selectedPegawai.id_kontrak}
+                    value={selectedPegawai.id_kontrak || ""}
+                    onChange={(e) =>
+                      setSelectedPegawai({
+                        ...selectedPegawai,
+                        id_kontrak: parseInt(e.target.value),
+                      })
+                    }
                     required
                   >
                     <option value="">Pilih Kontrak</option>
