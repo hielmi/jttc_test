@@ -10,11 +10,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/jabatan",
-    element: <KontrakPage />,
+    element: <JabatanPage />,
   },
   {
     path: "/kontrak",
-    element: <JabatanPage />,
+    element: <KontrakPage />,
   },
 ]);
 

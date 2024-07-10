@@ -159,17 +159,21 @@ const MainPage = () => {
         `/pegawai/updatePegawai.php`,
         selectedPegawai
       );
-      console.log("Pegawai updated successfully:", response.data);
-
-      setSelectedPegawai({});
-      fetchData();
-      Swal.fire({
-        title: "Updated!",
-        text: "Your file has been updated.",
-        icon: "success",
-      });
+      if (response.status) {
+        setSelectedPegawai({});
+        fetchData();
+        Swal.fire({
+          title: "Updated!",
+          text: "Your file has been updated.",
+          icon: "success",
+        });
+      }
     } catch (error) {
       console.error("Error updating pegawai:", error);
+      Swal.fire({
+        title: "Something error!",
+        icon: "error",
+      });
     }
   };
 
@@ -194,7 +198,7 @@ const MainPage = () => {
         <table className="table table-striped">
           <thead>
             <tr>
-              <th>ID</th>
+              <th>No</th>
               <th>Name</th>
               <th>Jabatan</th>
               <th>Kontrak</th>
@@ -202,9 +206,9 @@ const MainPage = () => {
             </tr>
           </thead>
           <tbody>
-            {pegawaiList.map((pegawai: Pegawai) => (
+            {pegawaiList.map((pegawai: Pegawai, index: number) => (
               <tr key={pegawai.id}>
-                <td>{pegawai.id}</td>
+                <td>{index + 1}</td>
                 <td>{pegawai.name}</td>
                 <td>
                   {
